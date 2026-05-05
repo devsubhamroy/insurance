@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>VitaCover — Life Insurance</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root{
+      --bg:#06090F;--surf:#0C1018;--card:#101520;
+      --bdr:#1A2235;--fg:#EDF2F7;--mut:#8896AB;
+      --gld:#C9933A;--gldL:#E5B86A;--teal:#1EC8A4;--red:#E05252;
+      --nh:60px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Cabinet Grotesk',sans-serif;background:var(--bg);color:var(--fg);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+
+    /* ── Orbs ── */
+    .orb{position:absolute;border-radius:50%;filter:blur(110px);opacity:.2;pointer-events:none;animation:drift 13s ease-in-out infinite alternate;}
+    .oa{width:min(500px,80vw);height:min(500px,80vw);background:var(--gld);top:-20%;left:-20%;}
+    .ob{width:min(380px,70vw);height:min(380px,70vw);background:var(--teal);bottom:-15%;right:-15%;animation-delay:-5s;}
+    .oc{width:min(280px,50vw);height:min(280px,50vw);background:#5B4FCF;top:50%;left:55%;opacity:.08;animation-delay:-9s;}
+    @keyframes drift{0%{transform:translate(0,0)}50%{transform:translate(20px,-30px)}100%{transform:translate(-10px,15px)}}
+
+    /* ── Noise ── */
+    .noise{position:fixed;inset:0;pointer-events:none;z-index:9988;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+    /* ── Nav ── */
+    .nav{position:fixed;top:0;left:0;right:0;height:var(--nh);z-index:800;display:flex;align-items:center;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(6,9,15,.82);border-bottom:1px solid rgba(26,34,53,.8);}
+    .nav-inner{width:100%;max-width:1152px;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+    .logo{display:flex;align-items:center;gap:9px;text-decoration:none;}
+    .logo-box{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--gld),var(--teal));display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .logo span{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:19px;color:var(--fg);}
+    .nav-links{display:none;}
+    @media(min-width:768px){.nav-links{display:flex;gap:24px;}.nav-links a{font-size:14px;color:var(--mut);text-decoration:none;transition:color .2s;}.nav-links a:hover{color:var(--fg);}}
+    .ham{width:38px;height:38px;border-radius:9px;border:1px solid var(--bdr);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .2s;}
+    .ham:hover{background:rgba(255,255,255,.08);}
+    @media(min-width:768px){.ham{display:none;}}
+    .nav-cta-d{display:none;}
+    @media(min-width:480px){.nav-cta-d{display:inline-flex;}}
+
+    /* ── Mobile drawer ── */
+    .drawer{position:fixed;top:var(--nh);left:0;right:0;z-index:799;background:rgba(12,16,24,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr);padding:16px 16px 24px;transform:translateY(-110%);transition:transform .33s cubic-bezier(.4,0,.2,1);}
+    .drawer.open{transform:translateY(0);}
+    .drawer a{display:flex;align-items:center;gap:11px;padding:13px 0;font-size:15px;font-weight:600;color:var(--mut);text-decoration:none;border-bottom:1px solid rgba(26,34,53,.6);transition:color .2s;}
+    .drawer a:last-of-type{border-bottom:none;}
+    .drawer a:hover{color:var(--fg);}
+
+    /* ── Gradient text ── */
+    .grad{background:linear-gradient(120deg,var(--gldL) 20%,var(--teal) 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+    /* ── Badge ── */
+    .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(201,147,58,.1);border:1px solid rgba(201,147,58,.25);border-radius:99px;padding:5px 14px;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--gldL);}
+
+    /* ── Buttons ── */
+    .bp{background:linear-gradient(135deg,#D49A3E,#A87325);color:#06090F;font-weight:800;font-family:'Cabinet Grotesk',sans-serif;height:52px;padding:0 24px;border-radius:14px;border:none;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .25s,box-shadow .25s;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
+    .bp:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(201,147,58,.3);}
+    .bp:active{transform:scale(.97);}
+    .bp.sm{height:38px;font-size:13px;padding:0 15px;border-radius:10px;}
+    .bp.full{width:100%;}
+    .bs{background:rgba(255,255,255,.04);border:1.5px solid var(--bdr);color:var(--mut);font-weight:600;font-family:'Cabinet Grotesk',sans-serif;height:52px;padding:0 22px;border-radius:14px;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:border-color .25s,color .25s;-webkit-tap-highlight-color:transparent;}
+    .bs:hover{border-color:var(--mut);color:var(--fg);}
+    .bs.full{width:100%;}
+
+    /* ── Estimator card ── */
+    .ecard{background:rgba(16,21,32,.8);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--bdr);border-radius:22px;padding:clamp(16px,5vw,30px);position:relative;overflow:hidden;}
+    .ecard::before{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;background:radial-gradient(circle,rgba(201,147,58,.2),transparent 70%);pointer-events:none;}
+
+    /* ── Stats ── */
+    .sn{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(26px,6vw,38px);background:linear-gradient(135deg,var(--gldL),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+    /* ── Features ── */
+    .feat{background:rgba(255,255,255,.025);border:1px solid var(--bdr);border-radius:16px;padding:18px;transition:border-color .3s,transform .3s;position:relative;overflow:hidden;}
+    .feat::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,147,58,.05),transparent);opacity:0;transition:opacity .3s;pointer-events:none;}
+    @media(hover:hover){.feat:hover{border-color:rgba(201,147,58,.4);transform:translateY(-4px);}.feat:hover::after{opacity:1;}}
+    .ficon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+
+    /* ── Progress ── */
+    .ptrack{height:3px;background:var(--bdr);border-radius:99px;overflow:hidden;}
+    .pfill{height:100%;background:linear-gradient(90deg,var(--gld),var(--teal));border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+
+    /* ── Step dots ── */
+    .sdot{height:8px;border-radius:99px;background:var(--bdr);transition:width .3s,background .3s;}
+    .sdot.on{width:22px!important;background:var(--gld);}
+
+    /* ── Step panels ── */
+    .sw{position:relative;}
+    .sp{position:absolute;top:0;left:0;width:100%;opacity:0;transform:translateX(40px);pointer-events:none;visibility:hidden;transition:opacity .38s,transform .38s;}
+    .sp.active{position:relative;opacity:1;transform:translateX(0);pointer-events:auto;visibility:visible;}
+    .sp.exit{opacity:0;transform:translateX(-40px);visibility:hidden;}
+
+    /* ── Form inputs ── */
+    .fi{background:rgba(255,255,255,.04);border:1.5px solid var(--bdr);border-radius:13px;height:52px;padding:0 14px;color:var(--fg);font-size:15px;font-family:'Cabinet Grotesk',sans-serif;width:100%;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .25s,box-shadow .25s,background .25s;}
+    .fi:focus{border-color:var(--gld);box-shadow:0 0 0 3px rgba(201,147,58,.14);background:rgba(255,255,255,.06);}
+    .fi::placeholder{color:#374151;}
+    .fi.e{border-color:var(--red);box-shadow:0 0 0 3px rgba(224,82,82,.12);}
+    .fi.ic{padding-left:40px;}
+    .fi.px{padding-left:54px;}
+    select.fi{cursor:pointer;padding-right:36px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath fill='%238896AB' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+    select.fi option{background:#101520;}
+    .fiw{position:relative;}
+    .fii{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--mut);pointer-events:none;}
+    .fpfx{position:absolute;left:0;top:0;bottom:0;display:flex;align-items:center;padding:0 13px;font-size:13px;font-weight:700;color:var(--mut);border-right:1px solid var(--bdr);}
+    .flbl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--mut);margin-bottom:7px;}
+    .emsg{font-size:12px;color:var(--red);margin-top:6px;display:none;align-items:center;gap:4px;}
+    .emsg.s{display:flex;}
+
+    /* ── Date scroll (horizontal strip on mobile) ── */
+    .dscroll{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;scroll-snap-type:x mandatory;}
+    .dscroll::-webkit-scrollbar{height:3px;}
+    .dscroll::-webkit-scrollbar-track{background:var(--bdr);border-radius:99px;}
+    .dscroll::-webkit-scrollbar-thumb{background:var(--gld);border-radius:99px;}
+    .ds{flex-shrink:0;width:58px;background:rgba(255,255,255,.035);border:1.5px solid var(--bdr);border-radius:11px;padding:9px 4px;text-align:center;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;transition:all .2s;scroll-snap-align:start;}
+    .ds:hover{border-color:var(--gld);background:rgba(201,147,58,.08);}
+    .ds.sel{border-color:var(--gld);background:rgba(201,147,58,.2);color:var(--gldL);font-weight:700;}
+
+    /* ── Time grid ── */
+    .tg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    @media(min-width:480px){.tg{grid-template-columns:repeat(4,1fr);}}
+    .ts{background:rgba(255,255,255,.035);border:1.5px solid var(--bdr);border-radius:11px;padding:11px 6px;text-align:center;cursor:pointer;font-size:13px;user-select:none;-webkit-tap-highlight-color:transparent;transition:all .2s;}
+    .ts:hover{border-color:var(--gld);background:rgba(201,147,58,.08);}
+    .ts.sel{border-color:var(--gld);background:rgba(201,147,58,.2);color:var(--gldL);font-weight:700;}
+
+    /* ── Confirmation ── */
+    .cring{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,rgba(30,200,164,.15),rgba(201,147,58,.15));border:2px solid var(--teal);display:flex;align-items:center;justify-content:center;animation:pop .6s cubic-bezier(.34,1.56,.64,1) forwards;transform:scale(0);}
+    @keyframes pop{to{transform:scale(1);}}
+    .cring i{font-size:34px;color:var(--teal);opacity:0;animation:fi .35s ease .5s forwards;}
+    @keyframes fi{to{opacity:1;}}
+
+    /* ── Records ── */
+    .rec{background:rgba(255,255,255,.025);border:1px solid var(--bdr);border-radius:13px;padding:13px 14px;transition:border-color .2s;}
+    .rec:hover{border-color:rgba(201,147,58,.25);}
+
+    /* ── Toast ── */
+    .toast{position:fixed;z-index:9999;padding:12px 18px;border-radius:13px;font-size:13px;font-weight:600;backdrop-filter:blur(14px);display:flex;align-items:center;gap:9px;max-width:min(320px,calc(100vw - 28px));transition:transform .36s cubic-bezier(.4,0,.2,1),opacity .36s;}
+    @media(min-width:560px){.toast{top:18px;right:18px;transform:translateX(130%);}.toast.show{transform:translateX(0);}}
+    @media(max-width:559px){.toast{bottom:76px;left:50%;transform:translateX(-50%) translateY(80px);opacity:0;}.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}}
+    .tok{background:rgba(30,200,164,.15);border:1px solid rgba(30,200,164,.3);color:var(--teal);}
+    .terr{background:rgba(224,82,82,.15);border:1px solid rgba(224,82,82,.3);color:var(--red);}
+
+    /* ── Sticky mobile FAB ── */
+    .fab{display:none;position:fixed;bottom:0;left:0;right:0;z-index:700;padding:10px 14px;padding-bottom:calc(10px + env(safe-area-inset-bottom));background:rgba(6,9,15,.93);backdrop-filter:blur(16px);border-top:1px solid var(--bdr);}
+    @media(max-width:767px){.fab{display:block;}}
+
+    /* ── Divider ── */
+    .hr{height:1px;background:linear-gradient(90deg,transparent,var(--bdr),transparent);}
+
+    /* ── Reveal ── */
+    .rev{opacity:0;transform:translateY(22px);transition:opacity .6s,transform .6s;}
+    .rev.vis{opacity:1;transform:translateY(0);}
+
+    /* ── Particles ── */
+    .pt{position:absolute;border-radius:50%;opacity:0;pointer-events:none;animation:ptr linear infinite;}
+    @keyframes ptr{0%{opacity:0;transform:translateY(0) scale(0);}15%{opacity:.5;}85%{opacity:.1;}100%{opacity:0;transform:translateY(-300px) scale(1);}}
+
+    /* ── Layout grids (injected inline for clarity) ── */
+    .hero-g{display:grid;grid-template-columns:1fr;gap:28px;align-items:center;}
+    @media(min-width:1024px){.hero-g{grid-template-columns:1fr 1fr;gap:52px;}}
+    .stat-g{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(min-width:768px){.stat-g{grid-template-columns:repeat(4,1fr);}}
+    .feat-g{display:grid;grid-template-columns:1fr;gap:10px;}
+    @media(min-width:600px){.feat-g{grid-template-columns:1fr 1fr;gap:12px;}}
+    @media(min-width:1024px){.feat-g{grid-template-columns:1fr 1fr 1fr;gap:14px;}}
+    .form-g{display:grid;grid-template-columns:1fr;gap:15px;}
+    @media(min-width:480px){.form-g{grid-template-columns:1fr 1fr;gap:15px;}}
+
+    /* ── Section padding ── */
+    .sec{padding:clamp(48px,8vw,96px) 0;}
+    .wrap{max-width:1152px;margin:0 auto;padding:0 16px;}
+    .fwrap{max-width:640px;margin:0 auto;padding:0 16px;}
+
+    ::-webkit-scrollbar{width:4px;}
+    ::-webkit-scrollbar-track{background:var(--bg);}
+    ::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:99px;}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+  </style>
+</head>
+<body>
+
+<div class="noise" aria-hidden="true"></div>
+<div id="toast" class="toast" role="alert" aria-live="assertive"></div>
+
+<!-- ════════ NAV ════════ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="logo" aria-label="VitaCover">
+      <div class="logo-box"><i class="fa-solid fa-shield-halved" style="color:#06090F;font-size:14px;"></i></div>
+      <span>VitaCover</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#stats">Why Us</a>
+      <a href="#form-section">Consult</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="bp sm nav-cta-d" onclick="scrollToForm()">Get Quote <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i></button>
+      <button class="ham" id="hamBtn" aria-label="Menu" aria-expanded="false">
+        <i id="hamIco" class="fa-solid fa-bars" style="font-size:14px;color:var(--mut);"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile drawer -->
+<div class="drawer" id="drawer" role="navigation">
+  <a href="#features"     onclick="closeD()"><i class="fa-solid fa-bolt" style="color:var(--gldL);width:16px;text-align:center;"></i>Features</a>
+  <a href="#stats"        onclick="closeD()"><i class="fa-solid fa-chart-bar" style="color:var(--teal);width:16px;text-align:center;"></i>Why Us</a>
+  <a href="#form-section" onclick="closeD()"><i class="fa-solid fa-calendar-check" style="color:#A78BFA;width:16px;text-align:center;"></i>Consult</a>
+  <div style="margin-top:18px;">
+    <button class="bp full" onclick="closeD();scrollToForm();">Book Free Consultation <i class="fa-solid fa-arrow-right"></i></button>
+  </div>
+</div>
+
+<main style="position:relative;z-index:10;">
+
+  <!-- ════════ HERO ════════ -->
+  <section style="position:relative;min-height:100svh;display:flex;align-items:center;padding-top:var(--nh);overflow:hidden;">
+    <div class="orb oa" aria-hidden="true"></div>
+    <div class="orb ob" aria-hidden="true"></div>
+    <div class="orb oc" aria-hidden="true"></div>
+    <div id="particles" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;"></div>
+
+    <div class="wrap" style="padding-top:36px;padding-bottom:clamp(90px,14vw,120px);position:relative;z-index:2;width:100%;">
+      <div class="hero-g">
+
+        <!-- Copy -->
+        <div class="rev">
+          <div class="badge" style="margin-bottom:18px;"><i class="fa-solid fa-leaf" style="font-size:9px;"></i>Trusted by 2M+ families across India</div>
+          <h1 class="font-display" style="font-size:clamp(34px,8vw,70px);font-weight:700;line-height:1.05;margin-bottom:16px;">
+            Protect What<br><em class="grad" style="font-style:normal;">Matters Most</em>
+          </h1>
+          <p style="font-size:clamp(14px,2.5vw,17px);line-height:1.72;color:var(--mut);margin-bottom:22px;max-width:460px;">
+            Life insurance built around your family's future. Transparent terms, instant coverage, and claims settled within 24 hours.
+          </p>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;">
+            <button class="bp" style="flex:1;min-width:170px;" onclick="scrollToForm()">Start Coverage <i class="fa-solid fa-arrow-right"></i></button>
+            <button class="bs" style="flex:1;min-width:130px;" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Learn More</button>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px 18px;">
+            <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);"><i class="fa-solid fa-certificate" style="color:var(--gld);font-size:10px;"></i>IRDAI Certified</span>
+            <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);"><i class="fa-solid fa-bolt" style="color:var(--teal);font-size:10px;"></i>10-Min Approval</span>
+            <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);"><i class="fa-solid fa-lock" style="color:#A78BFA;font-size:10px;"></i>Bank-Grade Security</span>
+          </div>
+        </div>
+
+        <!-- Estimator card -->
+        <div class="rev" style="transition-delay:.14s;">
+          <div class="ecard">
+            <div style="position:relative;z-index:1;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);">Coverage Estimator</span>
+                <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;background:rgba(30,200,164,.12);color:var(--teal);"><i class="fa-solid fa-circle" style="font-size:6px;margin-right:3px;"></i>Live</span>
+              </div>
+              <div style="margin-bottom:4px;">
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--mut);">Sum Assured</div>
+                <div id="heroSum" class="font-display" style="font-size:clamp(24px,5vw,38px);font-weight:700;color:var(--fg);margin-top:3px;">₹50,00,000</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0;">
+                <div style="background:rgba(255,255,255,.035);border-radius:11px;padding:11px 12px;"><div style="font-size:10px;color:var(--mut);margin-bottom:3px;">Monthly</div><div id="heroPremium" style="font-weight:800;font-size:16px;">₹2,083</div></div>
+                <div style="background:rgba(255,255,255,.035);border-radius:11px;padding:11px 12px;"><div style="font-size:10px;color:var(--mut);margin-bottom:3px;">Term</div><div style="font-weight:800;font-size:16px;">30 Yrs</div></div>
+                <div style="background:rgba(255,255,255,.035);border-radius:11px;padding:11px 12px;"><div style="font-size:10px;color:var(--mut);margin-bottom:3px;">Tax</div><div style="font-weight:800;font-size:16px;color:var(--teal);">Sec 80C</div></div>
+                <div style="background:rgba(255,255,255,.035);border-radius:11px;padding:11px 12px;"><div style="font-size:10px;color:var(--mut);margin-bottom:3px;">Claims</div><div style="font-weight:800;font-size:16px;color:var(--gldL);">98.7%</div></div>
+              </div>
+              <label style="font-size:10px;color:var(--mut);display:block;margin-bottom:7px;">Adjust Coverage</label>
+              <input type="range" min="1000000" max="20000000" step="100000" value="5000000" id="heroSlider" oninput="updEst(this.value)" style="width:100%;height:6px;border-radius:99px;accent-color:var(--gld);cursor:pointer;" aria-label="Coverage slider">
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--mut);margin-top:5px;"><span>₹10L</span><span>₹2Cr</span></div>
+            </div>
+          </div>
+          <div style="margin-top:10px;display:flex;align-items:center;gap:9px;background:var(--surf);border:1px solid var(--bdr);border-radius:13px;padding:10px 14px;">
+            <div style="width:34px;height:34px;border-radius:50%;background:rgba(30,200,164,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-check" style="color:var(--teal);font-size:12px;"></i></div>
+            <div><div style="font-weight:700;font-size:13px;">98.7% Claim Settlement</div><div style="font-size:11px;color:var(--mut);">Best-in-class ratio</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ STATS ════════ -->
+  <div class="hr"></div>
+  <section id="stats" class="sec">
+    <div class="wrap">
+      <div class="stat-g rev">
+        <div style="text-align:center;"><div class="sn" data-t="2000000" data-s="+" data-f="lakh">0</div><div style="font-size:12px;color:var(--mut);margin-top:4px;">Lives Covered</div></div>
+        <div style="text-align:center;"><div class="sn" data-t="98.7" data-s="%" data-d="1">0</div><div style="font-size:12px;color:var(--mut);margin-top:4px;">Claim Settlement</div></div>
+        <div style="text-align:center;"><div class="sn" data-t="15000" data-s="Cr+" data-f="k">0</div><div style="font-size:12px;color:var(--mut);margin-top:4px;">Claims Paid</div></div>
+        <div style="text-align:center;"><div class="sn" data-t="4.9" data-s="/5" data-d="1">0</div><div style="font-size:12px;color:var(--mut);margin-top:4px;">Customer Rating</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ FEATURES ════════ -->
+  <div class="hr"></div>
+  <section id="features" class="sec">
+    <div class="wrap">
+      <div class="rev" style="text-align:center;margin-bottom:36px;">
+        <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--gld);">Why VitaCover</span>
+        <h2 class="font-display" style="font-size:clamp(26px,5vw,48px);font-weight:700;margin:10px 0;">Built for Real Life</h2>
+        <p style="color:var(--mut);max-width:420px;margin:0 auto;font-size:14px;">Every feature designed around the moments that matter.</p>
+      </div>
+      <div class="feat-g">
+        <div class="feat rev" style="transition-delay:.04s"><div style="display:flex;gap:12px;align-items:flex-start;"><div class="ficon" style="background:rgba(201,147,58,.1);color:var(--gldL);"><i class="fa-solid fa-bolt"></i></div><div><h3 style="font-weight:700;font-size:15px;margin-bottom:5px;">Instant Coverage</h3><p style="font-size:13px;line-height:1.6;color:var(--mut);">Covered in 10 minutes. No tests up to ₹1Cr if under 45.</p></div></div></div>
+        <div class="feat rev" style="transition-delay:.07s"><div style="display:flex;gap:12px;align-items:flex-start;"><div class="ficon" style="background:rgba(30,200,164,.1);color:var(--teal);"><i class="fa-solid fa-hand-holding-heart"></i></div><div><h3 style="font-weight:700;font-size:15px;margin-bottom:5px;">Flexible Payouts</h3><p style="font-size:13px;line-height:1.6;color:var(--mut);">Lump-sum, monthly income, or a mix — your choice.</p></div></div></div>
+        <div class="feat rev" style="transition-delay:.1s"><div style="display:flex;gap:12px;align-items:flex-start;"><div class="ficon" style="background:rgba(147,51,234,.1);color:#A78BFA;"><i class="fa-solid fa-chart-line"></i></div><div><h3 style="font-weight:700;font-size:15px;margin-bottom:5px;">Wealth Growth</h3><p style="font-size:13px;line-height:1.6;color:var(--mut);">Unit-linked plans grow your premium with the market.</p></div></div></div>
+        <div class="feat rev" style="transition-delay:.13s"><div style="display:flex;gap:12px;align-items:flex-start;"><div class="ficon" style="background:rgba(239,68,68,.1);color:#FCA5A5;"><i class="fa-solid fa-user-doctor"></i></div><div><h3 style="font-weight:700;font-size:15px;margin-bottom:5px;">Free Health Checkup</h3><p style="font-size:13px;line-height:1.6;color:var(--mut);">Annual checkups at 5,000+ hospitals every year.</p></div></div></div>
+        <div class="feat rev" style="transition-delay:.16s"><div style="display:flex;gap:12px;align-items:flex-start;"><div class="ficon" style="background:rgba(14,165,233,.1);color:#7DD3FC;"><i class="fa-solid fa-file-contract"></i></div><div><h3 style="font-weight:700;font-size:15px;margin-bottom:5px;">Zero Hidden Clauses</h3><p style="font-size:13px;line-height:1.6;color:var(--mut);">Plain language terms. No surprises, ever.</p></div></div></div>
+        <div class="feat rev" style="transition-delay:.19s"><div style="display:flex;gap:12px;align-items:flex-start;"><div class="ficon" style="background:rgba(16,185,129,.1);color:#6EE7B7;"><i class="fa-solid fa-headset"></i></div><div><h3 style="font-weight:700;font-size:15px;margin-bottom:5px;">Dedicated Advisor</h3><p style="font-size:13px;line-height:1.6;color:var(--mut);">One named advisor for your entire policy lifecycle.</p></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ FORM ════════ -->
+  <div class="hr"></div>
+  <section id="form-section" class="sec" style="padding-bottom:clamp(90px,14vw,120px);">
+    <div class="fwrap">
+
+      <div class="rev" style="text-align:center;margin-bottom:30px;">
+        <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--gld);">Get Started</span>
+        <h2 class="font-display" style="font-size:clamp(24px,6vw,44px);font-weight:700;margin:10px 0;">Book Free Consultation</h2>
+        <p style="color:var(--mut);font-size:14px;max-width:340px;margin:0 auto;">Two quick steps — fill details, pick a slot, done.</p>
+      </div>
+
+      <!-- Progress -->
+      <div class="rev" style="margin-bottom:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;">
+          <span style="font-size:13px;font-weight:600;" id="sLabel">Step 1 of 2 — Personal Details</span>
+          <span style="font-size:13px;color:var(--mut);" id="sPct">50%</span>
+        </div>
+        <div class="ptrack"><div class="pfill" id="pBar" style="width:50%;"></div></div>
+        <div style="display:flex;justify-content:center;gap:7px;margin-top:12px;">
+          <div class="sdot on" id="d1" style="width:22px;"></div>
+          <div class="sdot"    id="d2" style="width:8px;"></div>
+          <div class="sdot"    id="d3" style="width:8px;"></div>
+        </div>
+      </div>
+
+      <!-- Card -->
+      <div class="rev" style="background:rgba(16,21,32,.82);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--bdr);border-radius:22px;padding:clamp(18px,5vw,36px);">
+        <div class="sw">
+
+          <!-- STEP 1 -->
+          <div class="sp active" id="s1">
+            <div class="form-g">
+
+              <div style="grid-column:1/-1;">
+                <label class="flbl" for="fname">Full Name <span style="color:var(--red);">*</span></label>
+                <div class="fiw"><i class="fii fa-regular fa-user"></i><input type="text" id="fname" class="fi ic" placeholder="Your full name" autocomplete="name"></div>
+                <div class="emsg" id="fnErr"><i class="fa-solid fa-circle-exclamation"></i>Please enter your name</div>
+              </div>
+
+              <div>
+                <label class="flbl" for="femail">Email <span style="color:var(--red);">*</span></label>
+                <div class="fiw"><i class="fii fa-regular fa-envelope"></i><input type="email" id="femail" class="fi ic" placeholder="you@example.com" autocomplete="email"></div>
+                <div class="emsg" id="emErr"><i class="fa-solid fa-circle-exclamation"></i>Enter a valid email</div>
+              </div>
+
+              <div>
+                <label class="flbl" for="fphone">Phone <span style="color:var(--red);">*</span></label>
+                <div class="fiw" style="position:relative;"><span class="fpfx">+91</span><input type="tel" id="fphone" class="fi px" placeholder="10-digit number" maxlength="10" autocomplete="tel" inputmode="numeric"></div>
+                <div class="emsg" id="phErr"><i class="fa-solid fa-circle-exclamation"></i>Enter valid 10-digit number</div>
+              </div>
+
+              <div>
+                <label class="flbl" for="fdob">Date of Birth <span style="color:var(--red);">*</span></label>
+                <div class="fiw"><i class="fii fa-regular fa-calendar"></i><input type="date" id="fdob" class="fi ic" autocomplete="bday"></div>
+                <div class="emsg" id="dbErr"><i class="fa-solid fa-circle-exclamation"></i>Please select your DOB</div>
+              </div>
+
+              <div>
+                <label class="flbl" for="fincome">Annual Income <span style="color:var(--red);">*</span></label>
+                <div class="fiw"><i class="fii fa-solid fa-indian-rupee-sign"></i>
+                  <select id="fincome" class="fi ic">
+                    <option value="" disabled selected>Select range</option>
+                    <option value="Below ₹3 Lakhs">Below ₹3 Lakhs</option>
+                    <option value="₹3 – 5 Lakhs">₹3 – 5 Lakhs</option>
+                    <option value="₹5 – 10 Lakhs">₹5 – 10 Lakhs</option>
+                    <option value="₹10 – 20 Lakhs">₹10 – 20 Lakhs</option>
+                    <option value="₹20 – 50 Lakhs">₹20 – 50 Lakhs</option>
+                    <option value="Above ₹50 Lakhs">Above ₹50 Lakhs</option>
+                  </select>
+                </div>
+                <div class="emsg" id="incErr"><i class="fa-solid fa-circle-exclamation"></i>Please select income range</div>
+              </div>
+
+              <div>
+                <label class="flbl" for="fpincode">Pincode <span style="color:var(--red);">*</span></label>
+                <div class="fiw"><i class="fii fa-solid fa-location-dot"></i><input type="text" id="fpincode" class="fi ic" placeholder="6-digit code" maxlength="6" autocomplete="postal-code" inputmode="numeric"></div>
+                <div class="emsg" id="pinErr"><i class="fa-solid fa-circle-exclamation"></i>Enter valid 6-digit pincode</div>
+              </div>
+
+            </div>
+            <div style="margin-top:22px;"><button class="bp full" onclick="goS2()">Next: Pick a Slot <i class="fa-solid fa-arrow-right"></i></button></div>
+          </div>
+
+          <!-- STEP 2 -->
+          <div class="sp" id="s2">
+
+            <!-- Details preview -->
+            <div style="background:rgba(255,255,255,.025);border:1px solid var(--bdr);border-radius:13px;padding:13px 14px;margin-bottom:20px;">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gld);margin-bottom:10px;">Your Details</div>
+              <div id="prevG" style="display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;font-size:12px;"></div>
+            </div>
+
+            <!-- Date -->
+            <div style="margin-bottom:18px;">
+              <label class="flbl">Appointment Date <span style="color:var(--red);">*</span></label>
+              <div class="dscroll" id="dateGrid"></div>
+              <div class="emsg" id="dtErr"><i class="fa-solid fa-circle-exclamation"></i>Please select a date</div>
+            </div>
+
+            <!-- Time -->
+            <div style="margin-bottom:22px;">
+              <label class="flbl">Time Slot <span style="color:var(--red);">*</span></label>
+              <div class="tg" id="timeGrid"></div>
+              <div class="emsg" id="tmErr"><i class="fa-solid fa-circle-exclamation"></i>Please select a time</div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:9px;">
+              <button class="bp full" onclick="submit()">Confirm Appointment <i class="fa-solid fa-check"></i></button>
+              <button class="bs full" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            </div>
+          </div>
+
+          <!-- STEP 3 -->
+          <div class="sp" id="s3">
+            <div style="text-align:center;padding:12px 0;">
+              <div style="display:flex;justify-content:center;margin-bottom:18px;"><div class="cring"><i class="fa-solid fa-check"></i></div></div>
+              <h3 class="font-display" style="font-size:clamp(20px,5vw,30px);font-weight:700;margin-bottom:7px;">You're All Set!</h3>
+              <p style="color:var(--mut);font-size:14px;margin-bottom:22px;max-width:280px;margin-left:auto;margin-right:auto;">Consultation booked. Our advisor will call you at the chosen time.</p>
+              <div style="background:rgba(255,255,255,.025);border:1px solid var(--bdr);border-radius:14px;padding:16px;text-align:left;margin-bottom:22px;">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gld);margin-bottom:12px;">Booking Summary</div>
+                <div style="display:flex;flex-direction:column;gap:9px;font-size:13px;">
+                  <div style="display:flex;justify-content:space-between;gap:8px;"><span style="color:var(--mut);">Name</span><span id="rName" style="font-weight:600;text-align:right;">—</span></div>
+                  <div style="display:flex;justify-content:space-between;gap:8px;"><span style="color:var(--mut);">Email</span><span id="rEmail" style="font-weight:600;text-align:right;word-break:break-all;max-width:58%;">—</span></div>
+                  <div style="display:flex;justify-content:space-between;gap:8px;"><span style="color:var(--mut);">Phone</span><span id="rPhone" style="font-weight:600;">—</span></div>
+                  <div style="display:flex;justify-content:space-between;gap:8px;"><span style="color:var(--mut);">Income</span><span id="rIncome" style="font-weight:600;text-align:right;">—</span></div>
+                  <div style="display:flex;justify-content:space-between;gap:8px;"><span style="color:var(--mut);">DOB</span><span id="rDob" style="font-weight:600;">—</span></div>
+                  <div style="display:flex;justify-content:space-between;gap:8px;"><span style="color:var(--mut);">Pincode</span><span id="rPin" style="font-weight:600;">—</span></div>
+                  <div style="border-top:1px solid var(--bdr);padding-top:9px;display:flex;justify-content:space-between;gap:8px;"><span style="color:var(--mut);">Date</span><span id="rDate" style="font-weight:700;color:var(--gldL);">—</span></div>
+                  <div style="display:flex;justify-content:space-between;gap:8px;"><span style="color:var(--mut);">Time</span><span id="rTime" style="font-weight:700;color:var(--gldL);">—</span></div>
+                </div>
+              </div>
+              <button class="bp full" onclick="reset()">Book Another <i class="fa-solid fa-rotate-left"></i></button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Records -->
+      <div id="recSec" style="display:none;margin-top:36px;" class="rev">
+        <h3 class="font-display" style="font-size:clamp(18px,4vw,26px);font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:9px;">
+          <i class="fa-solid fa-clock-rotate-left" style="font-size:14px;color:var(--gld);"></i>Previous Submissions
+        </h3>
+        <div id="recList" style="display:flex;flex-direction:column;gap:9px;"></div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- Sticky mobile FAB -->
+<div class="fab">
+  <button class="bp full" onclick="scrollToForm()">Book Free Consultation <i class="fa-solid fa-arrow-right"></i></button>
+</div>
+
+<!-- Footer -->
+<div class="hr"></div>
+<footer style="padding:clamp(20px,4vw,36px) 16px;padding-bottom:calc(clamp(20px,4vw,36px) + env(safe-area-inset-bottom));">
+  <div style="max-width:1152px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 24px;text-align:center;">
+    <div style="display:flex;align-items:center;gap:7px;">
+      <div style="width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--gld),var(--teal));display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-shield-halved" style="color:#06090F;font-size:11px;"></i></div>
+      <span class="font-display" style="font-weight:700;font-size:17px;color:var(--fg);">VitaCover</span>
+    </div>
+    <p style="font-size:12px;color:var(--mut);">IRDAI Reg. No. 123456 | CIN: L12345AB2020PLC012345</p>
+    <p style="font-size:11px;color:var(--mut);">Insurance subject to terms &amp; conditions.</p>
+  </div>
+</footer>
+
+<script>
+  let selD=null,selT=null,step=1,busy=false;
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    buildDates();buildTimes();loadRecs();
+    initParts();initReveal();initCounters();
+    setMaxDob();initClear();
+    dOnly('fphone',10);dOnly('fpincode',6);
+  });
+
+  /* ── Ham ── */
+  let mOpen=false;
+  const hamBtn=document.getElementById('hamBtn'),hamIco=document.getElementById('hamIco'),drawer=document.getElementById('drawer');
+  hamBtn.addEventListener('click',()=>{
+    mOpen=!mOpen; drawer.classList.toggle('open',mOpen);
+    hamBtn.setAttribute('aria-expanded',mOpen);
+    hamIco.className=mOpen?'fa-solid fa-xmark':'fa-solid fa-bars';
+    hamIco.style.fontSize='14px'; hamIco.style.color='var(--mut)';
+  });
+  function closeD(){mOpen=false;drawer.classList.remove('open');hamBtn.setAttribute('aria-expanded',false);hamIco.className='fa-solid fa-bars';}
+  document.addEventListener('click',e=>{if(mOpen&&!drawer.contains(e.target)&&!hamBtn.contains(e.target))closeD();});
+
+  function scrollToForm(){document.getElementById('form-section').scrollIntoView({behavior:'smooth'});}
+
+  /* ── Estimator ── */
+  function updEst(v){
+    const s=parseInt(v);
+    document.getElementById('heroSum').textContent='₹'+s.toLocaleString('en-IN');
+    document.getElementById('heroPremium').textContent='₹'+Math.round((s*.005)/12).toLocaleString('en-IN');
+  }
+
+  function setMaxDob(){
+    const t=new Date(),m=new Date(t.getFullYear()-18,t.getMonth(),t.getDate());
+    document.getElementById('fdob').max=m.toISOString().split('T')[0];
+  }
+
+  /* ── Dates ── */
+  function buildDates(){
+    const g=document.getElementById('dateGrid');g.innerHTML='';
+    const today=new Date();let cnt=0;
+    for(let i=1;cnt<12;i++){
+      const d=new Date(today);d.setDate(today.getDate()+i);
+      if(d.getDay()===0)continue;cnt++;
+      const dn=d.toLocaleDateString('en-IN',{weekday:'short'});
+      const dd=d.getDate(),dm=d.toLocaleDateString('en-IN',{month:'short'});
+      const full=d.toISOString().split('T')[0];
+      const el=document.createElement('div');el.className='ds';el.dataset.date=full;
+      el.setAttribute('role','button');el.setAttribute('tabindex','0');
+      el.innerHTML=`<div style="font-size:9px;color:var(--mut);margin-bottom:2px;">${dn}</div><div style="font-weight:800;font-size:15px;">${dd}</div><div style="font-size:9px;color:var(--mut);">${dm}</div>`;
+      el.addEventListener('click',()=>pickD(el,full));
+      el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pickD(el,full);}});
+      g.appendChild(el);
+    }
+  }
+  function pickD(el,date){document.querySelectorAll('.ds').forEach(s=>s.classList.remove('sel'));el.classList.add('sel');selD=date;hideE('dtErr');}
+
+  /* ── Times ── */
+  function buildTimes(){
+    const g=document.getElementById('timeGrid');g.innerHTML='';
+    ['10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 PM','2:00 PM','2:30 PM','3:00 PM','3:30 PM','4:00 PM','5:00 PM','5:30 PM'].forEach(t=>{
+      const el=document.createElement('div');el.className='ts';el.textContent=t;
+      el.setAttribute('role','button');el.setAttribute('tabindex','0');
+      el.addEventListener('click',()=>pickT(el,t));
+      el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pickT(el,t);}});
+      g.appendChild(el);
+    });
+  }
+  function pickT(el,t){document.querySelectorAll('.ts').forEach(s=>s.classList.remove('sel'));el.classList.add('sel');selT=t;hideE('tmErr');}
+
+  /* ── Errors ── */
+  function showE(id){
+    const m=document.getElementById(id);m.classList.add('s');
+    const f=m.previousElementSibling?.querySelector('.fi')||m.previousElementSibling;
+    if(f)f.classList.add('e');
+  }
+  function hideE(id){
+    const m=document.getElementById(id);m.classList.remove('s');
+    const f=m.previousElementSibling?.querySelector('.fi')||m.previousElementSibling;
+    if(f)f.classList.remove('e');
+  }
+  function clearE(){
+    document.querySelectorAll('.fi.e').forEach(e=>e.classList.remove('e'));
+    document.querySelectorAll('.emsg.s').forEach(e=>e.classList.remove('s'));
+  }
+
+  /* ── Validate ── */
+  function val1(){
+    clearE();let ok=true;
+    const n=v('fname'),em=v('femail'),ph=v('fphone'),inc=document.getElementById('fincome').value,dob=v('fdob'),pin=v('fpincode');
+    if(n.length<2)                               {showE('fnErr');ok=false;}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em))  {showE('emErr');ok=false;}
+    if(!/^\d{10}$/.test(ph))                     {showE('phErr');ok=false;}
+    if(!inc)                                     {showE('incErr');ok=false;}
+    if(!dob)                                     {showE('dbErr');ok=false;}
+    if(!/^\d{6}$/.test(pin))                     {showE('pinErr');ok=false;}
+    return ok;
+  }
+  function v(id){return document.getElementById(id).value.trim();}
+
+  /* ── Switch ── */
+  function sw(from,to){
+    if(busy)return;busy=true;
+    const f=document.getElementById('s'+from),t=document.getElementById('s'+to);
+    f.classList.remove('active');f.classList.add('exit');
+    setTimeout(()=>{
+      f.classList.remove('exit');t.classList.add('active');step=to;
+      const p={1:50,2:75,3:100};
+      document.getElementById('pBar').style.width=p[to]+'%';
+      document.getElementById('sPct').textContent=p[to]+'%';
+      const lb={1:'Step 1 of 2 — Personal Details',2:'Step 2 of 2 — Appointment',3:'Complete ✓'};
+      document.getElementById('sLabel').textContent=lb[to];
+      [1,2,3].forEach(n=>{
+        const d=document.getElementById('d'+n);
+        if(n<=to){d.classList.add('on');d.style.width='22px';d.style.background='var(--gld)';}
+        else{d.classList.remove('on');d.style.width='8px';d.style.background='var(--bdr)';}
+      });
+      busy=false;
+    },300);
+  }
+
+  function goS2(){
+    if(!val1()){toast('Please fill all required fields.','err');return;}
+    fillPrev();sw(1,2);
+    setTimeout(()=>document.getElementById('form-section').scrollIntoView({behavior:'smooth',block:'start'}),340);
+  }
+  function goBack(){sw(2,1);}
+
+  function fillPrev(){
+    const items=[['Name',v('fname')],['Email',v('femail')],['Phone','+91 '+v('fphone')],['Income',document.getElementById('fincome').value],['DOB',fmt(v('fdob'))],['Pincode',v('fpincode')]];
+    document.getElementById('prevG').innerHTML=items.map(([k,val])=>`<span style="color:var(--mut);font-size:11px;">${k}</span><span style="font-weight:600;font-size:11px;text-align:right;">${val}</span>`).join('');
+  }
+
+  /* ── Submit ── */
+  function submit(){
+    let ok=true;
+    if(!selD){showE('dtErr');ok=false;}
+    if(!selT){showE('tmErr');ok=false;}
+    if(!ok){toast('Please select a date and time.','err');return;}
+    const data={id:Date.now(),name:v('fname'),email:v('femail'),phone:v('fphone'),income:document.getElementById('fincome').value,dob:v('fdob'),pincode:v('fpincode'),aptDate:selD,aptTime:selT,saved:new Date().toISOString()};
+    const recs=JSON.parse(localStorage.getItem('vc_recs')||'[]');recs.unshift(data);localStorage.setItem('vc_recs',JSON.stringify(recs));
+    document.getElementById('rName').textContent=data.name;
+    document.getElementById('rEmail').textContent=data.email;
+    document.getElementById('rPhone').textContent='+91 '+data.phone;
+    document.getElementById('rIncome').textContent=data.income;
+    document.getElementById('rDob').textContent=fmt(data.dob);
+    document.getElementById('rPin').textContent=data.pincode;
+    document.getElementById('rDate').textContent=fmt(data.aptDate);
+    document.getElementById('rTime').textContent=data.aptTime;
+    sw(2,3);loadRecs();toast('Appointment confirmed!','ok');
+  }
+
+  function fmt(s){if(!s)return'—';return new Date(s+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});}
+
+  /* ── Reset ── */
+  function reset(){
+    ['fname','femail','fphone','fdob','fpincode'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('fincome').value='';
+    selD=null;selT=null;
+    document.querySelectorAll('.ds,.ts').forEach(s=>s.classList.remove('sel'));
+    clearE();sw(3,1);
+    setTimeout(()=>document.getElementById('form-section').scrollIntoView({behavior:'smooth',block:'start'}),340);
+  }
+
+  /* ── Records ── */
+  function loadRecs(){
+    const recs=JSON.parse(localStorage.getItem('vc_recs')||'[]');
+    const sec=document.getElementById('recSec'),list=document.getElementById('recList');
+    if(!recs.length){sec.style.display='none';return;}
+    sec.style.display='block';list.innerHTML='';
+    recs.forEach(r=>{
+      const row=document.createElement('div');row.className='rec';
+      row.innerHTML=`
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+          <div style="display:flex;align-items:center;gap:9px;flex:1;min-width:0;">
+            <div style="width:38px;height:38px;min-width:38px;border-radius:50%;background:rgba(201,147,58,.12);color:var(--gldL);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;">${r.name.charAt(0).toUpperCase()}</div>
+            <div style="min-width:0;">
+              <div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.name}</div>
+              <div style="font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">+91 ${r.phone} · ${r.email}</div>
+              <div style="font-size:11px;color:var(--mut);">${r.income} · DOB: ${fmt(r.dob)} · PIN: ${r.pincode}</div>
+              <div style="font-size:12px;font-weight:600;color:var(--gldL);margin-top:2px;">${fmt(r.aptDate)} at ${r.aptTime}</div>
+            </div>
+          </div>
+          <button onclick="delRec(${r.id})" style="min-width:32px;width:32px;height:32px;border-radius:9px;border:none;background:rgba(224,82,82,.1);color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;" aria-label="Delete"><i class="fa-solid fa-trash-can"></i></button>
+        </div>`;
+      list.appendChild(row);
+    });
+  }
+  function delRec(id){let r=JSON.parse(localStorage.getItem('vc_recs')||'[]');r=r.filter(x=>x.id!==id);localStorage.setItem('vc_recs',JSON.stringify(r));loadRecs();toast('Record deleted.','ok');}
+
+  /* ── Toast ── */
+  function toast(msg,type){
+    const el=document.getElementById('toast');
+    el.className='toast '+(type==='ok'?'tok':'terr');
+    el.innerHTML=`<i class="fa-solid ${type==='ok'?'fa-circle-check':'fa-circle-exclamation'}"></i>${msg}`;
+    void el.offsetWidth;el.classList.add('show');
+    setTimeout(()=>el.classList.remove('show'),3000);
+  }
+
+  /* ── Clear on input ── */
+  function initClear(){
+    ['fname','femail','fphone','fincome','fdob','fpincode'].forEach(id=>{
+      const el=document.getElementById(id),ev=el.tagName==='SELECT'?'change':'input';
+      el.addEventListener(ev,()=>{el.classList.remove('e');});
+    });
+  }
+  function dOnly(id,max){document.getElementById(id).addEventListener('input',function(){this.value=this.value.replace(/\D/g,'').slice(0,max);});}
+
+  /* ── Particles ── */
+  function initParts(){
+    const c=document.getElementById('particles');
+    for(let i=0;i<16;i++){
+      const p=document.createElement('div');p.className='pt';
+      const sz=(2+Math.random()*2.5)+'px';
+      p.style.cssText=`left:${Math.random()*100}%;top:${55+Math.random()*45}%;width:${sz};height:${sz};animation-duration:${7+Math.random()*9}s;animation-delay:${Math.random()*8}s;background:${Math.random()>.5?'var(--gld)':'var(--teal)'};`;
+      c.appendChild(p);
+    }
+  }
+
+  /* ── Reveal ── */
+  function initReveal(){
+    const ob=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');});},{threshold:.07,rootMargin:'0px 0px -24px 0px'});
+    document.querySelectorAll('.rev').forEach(el=>ob.observe(el));
+  }
+
+  /* ── Counters ── */
+  function initCounters(){
+    const ob=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){animC(e.target);ob.unobserve(e.target);}});},{threshold:.4});
+    document.querySelectorAll('.sn').forEach(el=>ob.observe(el));
+  }
+  function animC(el){
+    const target=parseFloat(el.dataset.t),suffix=el.dataset.s||'',dec=parseInt(el.dataset.d||'0'),fmt=el.dataset.f||'',dur=1700,t0=performance.now();
+    (function tick(now){
+      const pr=Math.min((now-t0)/dur,1),ease=1-Math.pow(1-pr,3),cur=ease*target;
+      if(dec>0)                          el.textContent=cur.toFixed(dec)+suffix;
+      else if(fmt==='lakh'&&target>=1e5) el.textContent=(cur/1e5).toFixed(0)+'L'+(suffix==='+'?'+':'');
+      else if(fmt==='k'  &&target>=1e3)  el.textContent=(cur/1e3).toFixed(0)+'K'+suffix.replace('+','');
+      else                               el.textContent=Math.round(cur).toLocaleString('en-IN')+suffix;
+      if(pr<1)requestAnimationFrame(tick);
+    })(t0);
+  }
+</script>
+</body>
+</html>
