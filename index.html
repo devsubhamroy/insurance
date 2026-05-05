@@ -442,8 +442,9 @@
   </div>
 </div>
 
-<div id="toast-container" style="position:fixed;top:20px;right:20px;z-index:9999;"></div>
-
+<!-- <div id="toast-container" style="position:fixed;top:20px;right:20px;z-index:9999;"></div> -->
+<!-- <div class="noise" aria-hidden="true"></div>
+<div id="toast" class="toast" role="alert" aria-live="assertive"></div> -->
 <script>
   // --- TOAST NOTIFICATIONS ---
   function showToast(message, type = 'success') {
@@ -589,7 +590,7 @@
 
   <!-- ════════ FORM ════════ -->
   <div class="hr"></div>
-  <section id="form-section" class="sec" style="padding-bottom:clamp(90px,14vw,120px);">
+  <section id="form-section" class="sec" style="padding-bottom:clamp(90px,14vw,120px);" hidden>
     <div class="fwrap">
 
       <div class="rev" style="text-align:center;margin-bottom:30px;">
